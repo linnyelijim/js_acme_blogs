@@ -45,17 +45,15 @@ function toggleCommentButton(postId) {
 function deleteChildElements(parentElement) {
     if(!parentElement?.lastElementChild)
         return;
-    else if(parentElement.lastElementChild == "")
-        return parentElement;
-    else {
-    let child = parentElement.lastElementChild;
+
+    let child = parentElement?.lastElementChild;
     while (child) {
         parentElement.removeChild(child);
-        child = parentElement.lastElementChild;
+        child = parentElement?.lastElementChild;   
     }  
     return parentElement;
 }
-}
+
 function addButtonListeners() {
     const buttons = document.querySelectorAll('main')[0].querySelectorAll('button');     
     
@@ -157,10 +155,13 @@ const getPostComments = async (postId) => {
 const displayComments = async (postId) =>{
     if(!postId) return;
     let section = document.createElement('section');
+
     section.dataset.postId = postId;
     section.classList.add('comments', 'hide');
+
     const comments = await getPostComments(postId);
     const fragment = createComments(comments);
+
     section.append(fragment);
     console.log(section);
     return section;
@@ -239,3 +240,4 @@ function initApp() {
     let select = document.getElementById('selectMenu');
     select.addEventListener("change", selectMenuChangeEventHandler, false);
 }
+document.addEventListener("DOMContentLoaded", initApp);
