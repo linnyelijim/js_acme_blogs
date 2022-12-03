@@ -1,18 +1,18 @@
 function createElemWithText(elemType = "p", textContent = "", className) {
     const myElem = document.createElement(elemType);
     myElem.textContent = textContent;
-    
-    if(className) 
+
+    if (className)
         myElem.classList.add(className)
     return myElem;
 }
-function createSelectOptions(users) {  
-    if(!users) 
+function createSelectOptions(users) {
+    if (!users)
         return;
 
     const userArray = [];
-    
-    users.forEach( (user) => {
+
+    users.forEach((user) => {
         let option = document.createElement("option");
         option.value = user.id;
         option.textContent = user.name;
@@ -21,70 +21,70 @@ function createSelectOptions(users) {
     return userArray;
 }
 function toggleCommentSection(postId) {
-    if (!postId) 
+    if (!postId)
         return;
 
     const section = document.querySelector(`section[data-post-id='${postId}']`);
-    
+
     if (section) {
         section.classList.toggle('hide');
     }
     return section;
 }
 function toggleCommentButton(postId) {
-    if(!postId)
+    if (!postId)
         return;
 
     const commentbutton = document.querySelector(`button[data-post-id='${postId}']`);
-    
-    if(commentbutton) {
+
+    if (commentbutton) {
         commentbutton.textContent == "Show Comments" ? (commentbutton.textContent = "Hide Comments") : (commentbutton.textContent = "Show Comments");
     }
     return commentbutton;
 }
 function deleteChildElements(parentElement) {
-    if(!parentElement?.lastElementChild)
+    if (!parentElement || !(parentElement instanceof HTMLElement))
         return;
 
-    let child = parentElement?.lastElementChild;
+    let child = parentElement.lastElementChild;
     while (child) {
         parentElement.removeChild(child);
-        child = parentElement?.lastElementChild;   
-    }  
+        child = parentElement.lastElementChild;
+    }
     return parentElement;
 }
 
 function addButtonListeners() {
-    const buttons = document.querySelectorAll('main')[0].querySelectorAll('button');     
-    
+    const buttons = document.querySelector('main').querySelectorAll('button');
+
     if (buttons) {
-        buttons.forEach( (button) => {
-            const postID = button.dataset.postId;   
+        buttons.forEach((button) => {
+            const postID = button.dataset.postId;
             button.addEventListener('click', function (e) {
-                toggleComments(e, postID)      
+                toggleComments(e, postID)
             }, false);
-        });   
+        });
         return buttons;
     }
 }
 function removeButtonListeners() {
-    const buttons = document.querySelectorAll('main')[0].querySelectorAll('button');
-    buttons.forEach( (button) => {
-        const postID = button.dataset.id;   
+    const buttons = document.querySelector('main').querySelectorAll('button');
+    buttons.forEach((button) => {
+        const postID = button.dataset.id;
 
         button.removeEventListener('click', function (e) {
-                toggleComments(e, postID)
+            toggleComments(e, postID)
         }, true);
     });
     return buttons;
 }
 function createComments(comments) {
-    if (!comments) 
+    if (!comments)
         return;
-      
+
     let fragment = document.createDocumentFragment();
 
-    comments.forEach( (comment) => {
+    comments.forEach((comment) => {
         let article = createElemWithText('article');
         let h3 = createElemWithText('h3', comment.name);
         let p1 = createElemWithText('p', comment.body);
@@ -93,16 +93,16 @@ function createComments(comments) {
         article.append(h3, p1, p2);
         fragment.append(article);
     });
-    return fragment;  
+    return fragment;
 }
 function populateSelectMenu(users) {
-    if (!users) 
+    if (!users)
         return;
 
     let menu = document.getElementById('selectMenu');
     let options = createSelectOptions(users);
 
-    options.forEach( (option) => {
+    options.forEach((option) => {
         menu.append(option);
     });
     return menu;
@@ -111,49 +111,49 @@ const getUsers = async () => {
     try {
         const response = await fetch("https://jsonplaceholder.typicode.com/users");
         return await response.json();
-    } catch(e) {
+    } catch (e) {
         console.log(e);
     }
 }
 
 const getUserPosts = async (userId) => {
-    if (!userId) 
+    if (!userId)
         return;
-    
-    try{
+
+    try {
         const response = await fetch(`https://jsonplaceholder.typicode.com/posts?userId=${userId}`);
         return await response.json();;
-    } catch(e) {
+    } catch (e) {
         console.log(e);
     }
 }
 
 const getUser = async (userId) => {
-    if (!userId) 
+    if (!userId)
         return;
 
     try {
         const response = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`);
         return await response.json();
-    } catch(e) {
+    } catch (e) {
         console.log(e);
     }
 }
 
 const getPostComments = async (postId) => {
-    if(!postId) 
+    if (!postId)
         return;
 
     try {
         const response = await fetch(`https://jsonplaceholder.typicode.com/comments?postId=${postId}`);
         return await response.json();
-    } catch(e){
+    } catch (e) {
         console.log(e);
     }
-} 
+}
 
-const displayComments = async (postId) =>{
-    if(!postId) return;
+const displayComments = async (postId) => {
+    if (!postId) return;
     let section = document.createElement('section');
 
     section.dataset.postId = postId;
@@ -163,16 +163,16 @@ const displayComments = async (postId) =>{
     const fragment = createComments(comments);
 
     section.append(fragment);
-    console.log(section);
+
     return section;
-} 
+}
 const createPosts = async (posts) => {
-    if(!posts) 
+    if (!posts)
         return;
 
     let fragment = document.createDocumentFragment();
 
-    for(let i = 0; i < posts.length; i++) {
+    for (let i = 0; i < posts.length; i++) {
         let post = posts[i];
         let article = document.createElement('article');
         let author = await getUser(post.userId);
@@ -186,39 +186,40 @@ const createPosts = async (posts) => {
         let button = createElemWithText('button', 'Show Comments');
         button.dataset.postId = post.id;
 
-        article.append(h2, p, p2, p3, p4, button, section); 
+        article.append(h2, p, p2, p3, p4, button, section);
         fragment.append(article);
     }
     return fragment;
 }
 const displayPosts = async (posts) => {
     const main = document.querySelector('main');
-    let element= (posts) ? await createPosts(posts) : document.querySelector('main p');
-    main.append(element);    
+    let element = (posts) ? await createPosts(posts) : document.querySelector('main p');
+    main.append(element);
     return element;
 
 }
 function toggleComments(event, postId) {
-    if (!event || !postId){
+    if (!event || !postId) {
         return undefined;
     }
     event.target.listener = true;
-    let section  = toggleCommentSection(postId);
+    let section = toggleCommentSection(postId);
     let button = toggleCommentButton(postId);
     return [section, button];
 }
 const refreshPosts = async (posts) => {
-    if(!posts)
+    if (!posts)
         return;
     let removeButtons = removeButtonListeners();
-    let main = deleteChildElements('main');
+    const mainEl = document.querySelector('main')
+    let main = deleteChildElements(mainEl);
     let fragment = await displayPosts(posts);
     let addButtons = addButtonListeners();
     return [removeButtons, main, fragment, addButtons];
 
 }
 const selectMenuChangeEventHandler = async (e) => {
-    if(!e)
+    if (!e)
         return;
     let menu = document.getElementById('selectMenu');
     menu.disabled = true;
@@ -228,9 +229,9 @@ const selectMenuChangeEventHandler = async (e) => {
     let refreshPostsArray = await refreshPosts(posts);
     menu.disabled = false;
     return [userId, posts, refreshPostsArray];
-    
+
 }
-const initPage = async() => {
+const initPage = async () => {
     let users = await getUsers();
     let select = populateSelectMenu(users);
     return [users, select];
